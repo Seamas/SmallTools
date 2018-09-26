@@ -7,8 +7,8 @@ namespace BingWallpaper
     {
         string Host { get; }
 
-        void Save();
+        void Save(string path);
 
-        Task SaveAsync();
+        Task SaveAsync(string path);
     }
 }

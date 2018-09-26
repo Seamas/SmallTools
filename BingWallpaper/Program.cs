@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,17 +16,20 @@ namespace BingWallpaper
     {
         static void Main(string[] args)
         {
-            var cnBing = new CnBingWallpaper();
-            
-            var enBing = new EnBingWallpaper();
-            cnBing.Save();
-            enBing.Save();
-            
-//            var task1 = cnBing.SaveAsync();
-//            var task2 = enBing.SaveAsync();
+            var wallpaperTypes = Assembly.GetExecutingAssembly().GetTypes().Where(item =>
+                !item.IsAbstract && item.GetInterface(typeof(IWallpaper).FullName) != null).ToList();
 
             Console.WriteLine("waiting for executing");
-//            Task.WaitAll(task1, task2);
+            var taskList = new List<Task>();
+
+            foreach (var wallpaperType in wallpaperTypes)
+            {
+                var wallPaper = (IWallpaper)Activator.CreateInstance(wallpaperType);
+                
+                taskList.Add(wallPaper.SaveAsync(args.Length == 0 ? string.Empty: args[0]));
+            }
+                      
+            Task.WaitAll(taskList.ToArray());
             Console.WriteLine("main thread finished");
         }
     }

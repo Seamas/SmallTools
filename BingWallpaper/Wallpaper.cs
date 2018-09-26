@@ -9,18 +9,30 @@ namespace BingWallpaper
     {
         public abstract string Host { get; }
 
-        public async Task SaveAsync()
+
+        public async Task SaveAsync(string path)
         {
-            await Task.Run(() => Save());
+            await Task.Run(() => Save(path));
         }
         
-        public virtual void Save()
+
+        public virtual void Save(string directory)
         {
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                directory = Path.Combine(new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName, "wallpaper");
+            }
+            
             var html = GetHtml();
             var imageUrl = GetImageUrl(html);
             var fileName = GetFileNameFromUrl(imageUrl);
             var bytes = GetUtf8Bytes(imageUrl);
-            var path = Path.Combine(new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName, fileName);
+            var path = Path.Combine(directory, fileName);
+            
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
             SaveTo(path, bytes);
         }
 
