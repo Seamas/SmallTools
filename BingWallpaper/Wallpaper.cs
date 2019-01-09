@@ -12,7 +12,8 @@ namespace BingWallpaper
 
         public async Task SaveAsync(string path)
         {
-            await Task.Run(() => Save(path));
+            await Task.Yield();
+            Save(path);
         }
         
 
@@ -36,7 +37,7 @@ namespace BingWallpaper
             SaveTo(path, bytes);
         }
 
-        protected virtual string GetHtml()
+        protected string GetHtml()
         {
             var util = new HttpClientUtil();
             return util.SendAsync(Host).Result.ReadAsString();
@@ -49,18 +50,18 @@ namespace BingWallpaper
             return imageUrl.Substring(imageUrl.LastIndexOf("/") + 1);
         }
 
-        protected virtual byte[] GetUtf8Bytes(string url)
+        protected byte[] GetUtf8Bytes(string url)
         {
             var util = new HttpClientUtil();
             return util.SendAsync(url).Result.ReadAsUTF8Bytes();
         }
 
-        protected virtual void SaveTo(string path, byte[] bytes)
+        protected void SaveTo(string path, byte[] bytes)
         {
             File.WriteAllBytes(path, bytes);
         }
         
-        protected virtual string GetActualUrl(string host, string url)
+        protected string GetActualUrl(string host, string url)
         {
             // url 包含协议头，是绝对路径
             if (url.StartsWith("http"))

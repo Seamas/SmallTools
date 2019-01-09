@@ -11,6 +11,7 @@ namespace BingWallpaper.Bing
         const string startQuote = "{";
         const string endQuote = "}";
         
+        
         protected override string GetImageUrl(string html)
         {
             var htmlDocument = new HtmlDocument();
@@ -26,6 +27,16 @@ namespace BingWallpaper.Bing
 
             var imgUrl = (string)gImg.url.ToString();
             return GetActualUrl(Host, imgUrl);
+        }
+
+        protected override string GetFileNameFromUrl(string imageUrl)
+        {
+            var fileName = imageUrl.Substring(imageUrl.LastIndexOf("/") + 1);
+
+            var index = fileName.IndexOf('_');
+            var lastIndex = fileName.LastIndexOf('.');
+
+            return fileName.Substring(0, index) + fileName.Substring(lastIndex);
         }
 
     }
